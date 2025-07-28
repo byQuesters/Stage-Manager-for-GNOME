@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist gettext-domain="gnome-shell-extensions">
+  <schema id="org.gnome.shell.extensions.stage-manager" path="/org/gnome/shell/extensions/stage-manager/">
+    
+    <key name="sidebar-width" type="i">
+      <default>250</default>
+      <summary>Ancho de la barra lateral</summary>
+      <description>El ancho de la barra lateral en píxeles</description>
+      <range min="200" max="400"/>
+    </key>
+    
+    <key name="animation-duration" type="d">
+      <default>0.25</default>
+      <summary>Duración de las animaciones</summary>
+      <description>Duración de las animaciones en segundos</description>
+      <range min="0.1" max="1.0"/>
+    </key>
+    
+    <key name="window-spacing" type="i">
+      <default>20</default>
+      <summary>Espaciado entre ventanas</summary>
+      <description>El espaciado entre ventanas en píxeles cuando hay múltiples ventanas en un stage</description>
+      <range min="10" max="50"/>
+    </key>
+    
+    <key name="auto-group-by-app" type="b">
+      <default>true</default>
+      <summary>Agrupar automáticamente por aplicación</summary>
+      <description>Si está habilitado, las ventanas de la misma aplicación se agrupan automáticamente en el mismo stage</description>
+    </key>
+    
+    <key name="show-app-icons" type="b">
+      <default>true</default>
+      <summary>Mostrar iconos de aplicación</summary>
+      <description>Mostrar iconos de aplicación en los thumbnails de ventanas</description>
+    </key>
+    
+    <key name="blur-inactive-stages" type="b">
+      <default>false</default>
+      <summary>Difuminar stages inactivos</summary>
+      <description>Aplicar efecto de difuminado a las ventanas de stages que no están activos</description>
+    </key>
+    
+    <key name="sidebar-position" type="s">
+      <choices>
+        <choice value="left"/>
+        <choice value="right"/>
+      </choices>
+      <default>"left"</default>
+      <summary>Posición de la barra lateral</summary>
+      <description>Posición de la barra lateral (izquierda o derecha)</description>
+    </key>
+    
+    <key name="thumbnail-size" type="i">
+      <default>200</default>
+      <summary>Tamaño de los thumbnails</summary>
+      <description>Tamaño de los thumbnails de ventanas en píxeles</description>
+      <range min="150" max="300"/>
+    </key>
+    
+    <key name="max-stages" type="i">
+      <default>10</default>
+      <summary>Número máximo de stages</summary>
+      <description>Número máximo de stages que se pueden crear</description>
+      <range min="5" max="20"/>
+    </key>
+    
+    <key name="hotkey-switch-stage" type="as">
+      <default>['&lt;Super&gt;Tab']</default>
+      <summary>Atajo para cambiar entre stages</summary>
+      <description>Combinación de teclas para cambiar entre stages</description>
+    </key>
+    
+    <key name="hotkey-new-stage" type="as">
+      <default>['&lt;Super&gt;&lt;Shift&gt;n']</default>
+      <summary>Atajo para crear nuevo stage</summary>
+      <description>Combinación de teclas para crear un nuevo stage</description>
+    </key>
+    
+    <key name="hotkey-move-window" type="as">
+      <default>['&lt;Super&gt;&lt;Shift&gt;m']</default>
+      <summary>Atajo para mover ventana</summary>
+      <description>Combinación de teclas para mover la ventana activa a otro stage</description>
+    </key>
+    
+    <key name="enable-workspace-integration" type="b">
+      <default>true</default>
+      <summary>Integración con espacios de trabajo</summary>
+      <description>Integrar Stage Manager con los espacios de trabajo de GNOME</description>
+    </key>
+    
+    <key name="sidebar-auto-hide" type="b">
+      <default>false</default>
+      <summary>Ocultar automáticamente la barra lateral</summary>
+      <description>Ocultar la barra lateral cuando no se usa</description>
+    </key>
+    
+    <key name="sidebar-transparency" type="d">
+      <default>0.8</default>
+      <summary>Transparencia de la barra lateral</summary>
+      <description>Nivel de transparencia de la barra lateral (0.0 = transparente, 1.0 = opaco)</description>
+      <range min="0.3" max="1.0"/>
+    </key>
+    
+  </schema>
+</schemalist>

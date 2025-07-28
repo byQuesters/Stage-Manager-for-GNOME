@@ -1,0 +1,216 @@
+/* stylesheet.css */
+
+.stage-sidebar {
+    background-color: rgba(0, 0, 0, 0.8);
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+.stage-sidebar-box {
+    padding: 20px 10px;
+    spacing: 15px;
+}
+
+.stage-button {
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    padding: 12px 16px;
+    color: white;
+    font-size: 14px;
+    font-weight: 500;
+    transition-duration: 200ms;
+}
+
+.stage-button:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.stage-button:active {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.stage-button.new-stage {
+    background-color: rgba(52, 152, 219, 0.3);
+    border-color: rgba(52, 152, 219, 0.5);
+    margin-bottom: 10px;
+}
+
+.stage-button.new-stage:hover {
+    background-color: rgba(52, 152, 219, 0.4);
+    border-color: rgba(52, 152, 219, 0.6);
+}
+
+.stage-item {
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 0;
+    margin-bottom: 10px;
+    transition-duration: 200ms;
+    min-height: 80px;
+}
+
+.stage-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: scale(1.02);
+}
+
+.stage-item.active {
+    background-color: rgba(52, 152, 219, 0.2);
+    border-color: rgba(52, 152, 219, 0.4);
+    box-shadow: 0 0 20px rgba(52, 152, 219, 0.3);
+}
+
+.stage-item.active:hover {
+    background-color: rgba(52, 152, 219, 0.25);
+    border-color: rgba(52, 152, 219, 0.5);
+}
+
+.stage-item-box {
+    padding: 12px;
+    spacing: 8px;
+}
+
+.stage-label {
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    text-align: center;
+}
+
+.stage-thumbnails {
+    spacing: 8px;
+    padding: 4px;
+}
+
+.window-thumbnail {
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    padding: 8px;
+    transition-duration: 150ms;
+    min-width: 60px;
+    min-height: 60px;
+}
+
+.window-thumbnail:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.window-thumbnail:active {
+    transform: scale(0.95);
+}
+
+.window-thumbnail-box {
+    spacing: 4px;
+    align-items: center;
+}
+
+.window-thumbnail-icon {
+    margin: 4px;
+}
+
+.stage-empty-label {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 11px;
+    font-style: italic;
+    text-align: center;
+    padding: 8px;
+}
+
+.window-thumbnail-label {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 12px;
+    max-width: 150px;
+}
+
+.stage-windows-list {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 11px;
+    padding: 4px;
+    max-width: 200px;
+}
+
+/* Animaciones personalizadas */
+@keyframes slideInFromLeft {
+    from {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeInScale {
+    from {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.stage-item {
+    animation: fadeInScale 0.3s ease-out;
+}
+
+.stage-sidebar {
+    animation: slideInFromLeft 0.4s ease-out;
+}
+
+/* Responsive design para diferentes tamaños de pantalla */
+@media (max-width: 1366px) {
+    .stage-sidebar {
+        width: 200px;
+    }
+    
+    .window-thumbnail-label {
+        max-width: 120px;
+        font-size: 11px;
+    }
+}
+
+/* Efectos de glassmorphism mejorados */
+.stage-sidebar {
+    background: linear-gradient(135deg, 
+        rgba(0, 0, 0, 0.7) 0%, 
+        rgba(20, 20, 20, 0.8) 50%, 
+        rgba(0, 0, 0, 0.9) 100%);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.stage-item.active {
+    background: linear-gradient(135deg, 
+        rgba(52, 152, 219, 0.2) 0%, 
+        rgba(41, 128, 185, 0.3) 100%);
+    box-shadow: 
+        0 4px 16px rgba(52, 152, 219, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* Scrollbar personalizado para la sidebar */
+.stage-sidebar StScrollBar StButton#hhandle,
+.stage-sidebar StScrollBar StButton#vhandle {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    margin: 2px;
+}
+
+.stage-sidebar StScrollBar StButton#hhandle:hover,
+.stage-sidebar StScrollBar StButton#vhandle:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+.stage-sidebar StScrollBar {
+    background-color: rgba(0, 0, 0, 0.1);
+}

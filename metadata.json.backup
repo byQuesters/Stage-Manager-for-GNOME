@@ -1,0 +1,18 @@
+{
+  "uuid": "stage-manager@gnome-extensions.local",
+  "name": "Stage Manager",
+  "description": "Replica el Stage Manager de macOS en GNOME Shell. Organiza ventanas por aplicación en un panel lateral con gestión de grupos inteligente.",
+  "version": 1,
+  "shell-version": [
+    "42",
+    "43",
+    "44",
+    "45",
+    "47",
+    "48",
+    "49"
+  ],
+  "url": "https://github.com/your-username/gnome-stage-manager",
+  "settings-schema": "org.gnome.shell.extensions.stage-manager",
+  "gettext-domain": "stage-manager"
+}
