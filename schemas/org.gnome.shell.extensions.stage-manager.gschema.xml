@@ -99,7 +99,7 @@
       <default>0.8</default>
       <summary>Transparencia de la barra lateral</summary>
       <description>Nivel de transparencia de la barra lateral (0.0 = transparente, 1.0 = opaco)</description>
-      <range min="0.3" max="1.0"/>
+      <range min="0.0" max="1.0"/>
     </key>
     
   </schema>
