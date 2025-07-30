@@ -29,6 +29,8 @@ class StageManagerExtension extends Extension {
         this._timeouts = [];
         this._isUpdating = false;
         this._windowTracker = null;
+        this._updateScheduled = false;
+        this._pendingWindows = new Set(); // Para tracking de ventanas pendientes
     }
 
     enable() {
@@ -70,6 +72,9 @@ class StageManagerExtension extends Extension {
             // Limpiar timeouts
             this._clearTimeouts();
             
+            // Cancelar animaciones pendientes
+            this._cancelPendingAnimations();
+            
             // Desconectar señales
             this._disconnectSignals();
             this._disconnectSettingsSignals();
@@ -92,6 +97,7 @@ class StageManagerExtension extends Extension {
             this._stages = [];
             this._currentStage = 0;
             this._windowTracker = null;
+            this._pendingWindows.clear();
             
             console.log('Stage Manager: Extensión deshabilitada correctamente');
             
@@ -144,7 +150,7 @@ class StageManagerExtension extends Extension {
     _disconnectSettingsSignals() {
         this._settingsSignals.forEach(([obj, id]) => {
             try {
-                if (obj && id) {
+                if (obj && id && typeof obj.disconnect === 'function') {
                     obj.disconnect(id);
                 }
             } catch (error) {
@@ -212,12 +218,27 @@ class StageManagerExtension extends Extension {
         if (!window) return false;
         
         try {
+            // Verificar que el objeto window siga siendo válido
+            if (window.is_destroyed && window.is_destroyed()) {
+                return false;
+            }
+            
             return window.get_window_type() === Meta.WindowType.NORMAL &&
                    !window.is_skip_taskbar() &&
                    !window.is_override_redirect() &&
                    window.get_workspace() !== null;
         } catch (error) {
             console.warn('Stage Manager: Error verificando ventana:', error);
+            return false;
+        }
+    }
+
+    _isWindowValid(window) {
+        try {
+            return window && 
+                   !window.is_destroyed() && 
+                   window.get_title !== undefined;
+        } catch (error) {
             return false;
         }
     }
@@ -278,11 +299,11 @@ class StageManagerExtension extends Extension {
             });
             this._signals.push([global.display, windowCreatedId]);
             
-            // Conectar señal de ventana destruida
-            let windowDestroyedId = global.window_manager.connect('destroy', (wm, windowActor) => {
-                this._safeCallback(() => this._onWindowDestroyed(windowActor));
+            // CORREGIDO: Usar la señal correcta para destrucción de ventanas
+            let windowUnmanagedId = global.display.connect('window-unmanaged', (display, window) => {
+                this._safeCallback(() => this._onWindowDestroyed(window));
             });
-            this._signals.push([global.window_manager, windowDestroyedId]);
+            this._signals.push([global.display, windowUnmanagedId]);
             
             // Conectar señal de cambio de estado de ventana (maximizar/minimizar)
             let windowStateChangedId = global.display.connect('window-state-changed', (display, window) => {
@@ -300,7 +321,7 @@ class StageManagerExtension extends Extension {
     _disconnectSignals() {
         this._signals.forEach(([obj, id]) => {
             try {
-                if (obj && id) {
+                if (obj && id && typeof obj.disconnect === 'function') {
                     obj.disconnect(id);
                 }
             } catch (error) {
@@ -335,7 +356,8 @@ class StageManagerExtension extends Extension {
                 for (let i = 0; i < this._stages.length; i++) {
                     let stageHasApp = this._stages[i].some(w => {
                         try {
-                            return this._windowTracker.get_window_app(w) === app;
+                            return this._isWindowValid(w) && 
+                                   this._windowTracker.get_window_app(w) === app;
                         } catch (e) {
                             return false;
                         }
@@ -361,22 +383,55 @@ class StageManagerExtension extends Extension {
         this._scheduleUpdate();
     }
 
-    _onWindowDestroyed(windowActor) {
+    _onWindowDestroyed(window) {
         try {
-            let window = windowActor.get_meta_window();
+            console.log('Stage Manager: Ventana destruida');
             
-            // Remover de todos los stages
-            this._stages.forEach(stage => {
+            // Remover de todos los stages de manera segura
+            let wasRemoved = false;
+            this._stages.forEach((stage, stageIndex) => {
                 let index = stage.indexOf(window);
                 if (index > -1) {
                     stage.splice(index, 1);
+                    wasRemoved = true;
+                    console.log(`Stage Manager: Ventana removida del stage ${stageIndex}`);
                 }
             });
             
-            this._scheduleUpdate();
+            // Limpiar stages vacíos (excepto el primero)
+            this._cleanEmptyStages();
+            
+            if (wasRemoved) {
+                this._scheduleUpdate();
+            }
             
         } catch (error) {
             console.warn('Stage Manager: Error manejando destrucción de ventana:', error);
+        }
+    }
+
+    _cleanEmptyStages() {
+        try {
+            // Remover stages vacíos desde el final, pero mantener al menos uno
+            for (let i = this._stages.length - 1; i > 0; i--) {
+                if (this._stages[i].length === 0) {
+                    this._stages.splice(i, 1);
+                    
+                    // Ajustar currentStage si está afectado
+                    if (this._currentStage >= i) {
+                        this._currentStage = Math.max(0, this._currentStage - 1);
+                    }
+                }
+            }
+            
+            // Asegurar que siempre haya al menos un stage
+            if (this._stages.length === 0) {
+                this._stages.push([]);
+                this._currentStage = 0;
+            }
+            
+        } catch (error) {
+            console.error('Stage Manager: Error limpiando stages vacíos:', error);
         }
     }
 
@@ -413,13 +468,16 @@ class StageManagerExtension extends Extension {
     }
 
     _scheduleUpdate() {
-        if (this._isUpdating) return;
+        if (this._isUpdating || this._updateScheduled || !this._enabled) return;
         
-        // Programar actualización para el próximo frame
-        let timeoutId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 100, () => {
+        this._updateScheduled = true;
+        
+        // Usar idle_add para mejor rendimiento
+        let timeoutId = GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
             if (this._enabled) {
                 this._updateUI();
             }
+            this._updateScheduled = false;
             return false; // No repetir
         });
         
@@ -432,6 +490,9 @@ class StageManagerExtension extends Extension {
         this._isUpdating = true;
         
         try {
+            // Limpiar ventanas inválidas antes de actualizar
+            this._cleanInvalidWindows();
+            
             this._updateSidebar();
             this._applyStageLayout();
         } catch (error) {
@@ -441,15 +502,50 @@ class StageManagerExtension extends Extension {
         }
     }
 
+    _cleanInvalidWindows() {
+        try {
+            this._stages.forEach((stage, stageIndex) => {
+                for (let i = stage.length - 1; i >= 0; i--) {
+                    let window = stage[i];
+                    if (!this._isWindowValid(window)) {
+                        stage.splice(i, 1);
+                        console.log(`Stage Manager: Ventana inválida removida del stage ${stageIndex}`);
+                    }
+                }
+            });
+        } catch (error) {
+            console.error('Stage Manager: Error limpiando ventanas inválidas:', error);
+        }
+    }
+
+    _cancelPendingAnimations() {
+        try {
+            global.get_window_actors().forEach(windowActor => {
+                try {
+                    if (windowActor && windowActor.remove_all_transitions) {
+                        windowActor.remove_all_transitions();
+                    }
+                } catch (error) {
+                    // Ignorar errores individuales
+                }
+            });
+        } catch (error) {
+            console.warn('Stage Manager: Error cancelando animaciones:', error);
+        }
+    }
+
     _applyStageLayout() {
         try {
             let currentStageWindows = this._stages[this._currentStage] || [];
+            
+            // Filtrar ventanas válidas
+            currentStageWindows = currentStageWindows.filter(w => this._isWindowValid(w));
             
             // Procesar ventanas de manera segura
             global.get_window_actors().forEach(windowActor => {
                 try {
                     let window = windowActor.get_meta_window();
-                    if (this._shouldManageWindow(window)) {
+                    if (this._shouldManageWindow(window) && this._isWindowValid(window)) {
                         if (!currentStageWindows.includes(window)) {
                             this._hideWindowSafe(windowActor);
                         } else {
@@ -487,7 +583,9 @@ class StageManagerExtension extends Extension {
             if (windows.length === 1) {
                 // Una sola ventana - ocupar todo el espacio disponible
                 let window = windows[0];
-                this._moveWindowSafe(window, workArea.x, workArea.y, workArea.width, workArea.height);
+                if (this._isWindowValid(window)) {
+                    this._moveWindowSafe(window, workArea.x, workArea.y, workArea.width, workArea.height);
+                }
             } else if (windows.length > 1) {
                 // Múltiples ventanas en grid
                 this._arrangeWindowsInGrid(windows, workArea);
@@ -500,14 +598,19 @@ class StageManagerExtension extends Extension {
 
     _arrangeWindowsInGrid(windows, workArea) {
         try {
-            let cols = Math.ceil(Math.sqrt(windows.length));
-            let rows = Math.ceil(windows.length / cols);
+            let validWindows = windows.filter(w => this._isWindowValid(w));
+            if (validWindows.length === 0) return;
+            
+            let cols = Math.ceil(Math.sqrt(validWindows.length));
+            let rows = Math.ceil(validWindows.length / cols);
             
             let windowWidth = Math.floor((workArea.width - (cols + 1) * WINDOW_SPACING) / cols);
             let windowHeight = Math.floor((workArea.height - (rows + 1) * WINDOW_SPACING) / rows);
 
-            windows.forEach((window, index) => {
+            validWindows.forEach((window, index) => {
                 try {
+                    if (!this._isWindowValid(window)) return;
+                    
                     let col = index % cols;
                     let row = Math.floor(index / cols);
                     
@@ -528,6 +631,7 @@ class StageManagerExtension extends Extension {
 
     _moveWindowSafe(window, x, y, width, height) {
         try {
+            if (!this._isWindowValid(window)) return;
             window.move_resize_frame(false, x, y, width, height);
         } catch (error) {
             console.warn('Stage Manager: Error moviendo ventana:', error);
@@ -536,7 +640,11 @@ class StageManagerExtension extends Extension {
 
     _hideWindowSafe(windowActor) {
         try {
+            if (!windowActor || windowActor.is_destroyed()) return;
             if (!windowActor.visible) return;
+            
+            // Cancelar animación anterior si existe
+            windowActor.remove_all_transitions();
             
             windowActor.ease({
                 opacity: 0,
@@ -544,7 +652,9 @@ class StageManagerExtension extends Extension {
                 mode: Clutter.AnimationMode.EASE_OUT_QUAD,
                 onComplete: () => {
                     try {
-                        windowActor.hide();
+                        if (windowActor && !windowActor.is_destroyed()) {
+                            windowActor.hide();
+                        }
                     } catch (error) {
                         console.warn('Stage Manager: Error ocultando ventana:', error);
                     }
@@ -558,7 +668,11 @@ class StageManagerExtension extends Extension {
 
     _showWindowSafe(windowActor) {
         try {
+            if (!windowActor || windowActor.is_destroyed()) return;
             if (windowActor.visible) return;
+            
+            // Cancelar animación anterior si existe
+            windowActor.remove_all_transitions();
             
             windowActor.show();
             windowActor.opacity = 0;
@@ -632,6 +746,9 @@ class StageManagerExtension extends Extension {
 
     _createStageItem(stageWindows, stageIndex) {
         try {
+            // Filtrar ventanas válidas
+            let validWindows = stageWindows.filter(w => this._isWindowValid(w));
+            
             let stageItem = new St.Button({
                 style_class: `stage-item ${stageIndex === this._currentStage ? 'active' : ''}`,
                 can_focus: true,
@@ -651,13 +768,13 @@ class StageManagerExtension extends Extension {
             stageBox.add_child(stageLabel);
 
             // Crear miniaturas de las ventanas/aplicaciones
-            if (stageWindows.length > 0) {
+            if (validWindows.length > 0) {
                 let thumbnailsBox = new St.BoxLayout({
                     vertical: true,
                     style_class: 'stage-thumbnails'
                 });
 
-                stageWindows.forEach(window => {
+                validWindows.forEach(window => {
                     let thumbnail = this._createWindowThumbnail(window);
                     if (thumbnail) {
                         thumbnailsBox.add_child(thumbnail);
@@ -691,11 +808,17 @@ class StageManagerExtension extends Extension {
 
     _createWindowThumbnail(window) {
         try {
-            if (!window || !this._shouldManageWindow(window)) {
+            if (!this._isWindowValid(window)) {
                 return null;
             }
 
-            let app = this._windowTracker.get_window_app(window);
+            let app = null;
+            try {
+                app = this._windowTracker.get_window_app(window);
+            } catch (error) {
+                console.warn('Stage Manager: Error obteniendo app de ventana:', error);
+            }
+            
             let showAppIcons = this._settings.get_boolean('show-app-icons');
             
             let thumbnail = new St.Button({
@@ -716,7 +839,7 @@ class StageManagerExtension extends Extension {
                     let icon = app.create_icon_texture(iconSize);
                     if (icon) {
                         icon.set_style_class('window-thumbnail-icon');
-                        thumbnailBox.add_child(icon);
+                        thumbnailsBox.add_child(icon);
                     }
                 } catch (iconError) {
                     console.warn('Stage Manager: Error creando icono:', iconError);
@@ -724,7 +847,13 @@ class StageManagerExtension extends Extension {
             }
 
             // Título de la ventana (truncado)
-            let windowTitle = window.get_title() || 'Sin título';
+            let windowTitle = 'Sin título';
+            try {
+                windowTitle = window.get_title() || 'Sin título';
+            } catch (error) {
+                console.warn('Stage Manager: Error obteniendo título de ventana:', error);
+            }
+            
             if (windowTitle.length > 15) {
                 windowTitle = windowTitle.substring(0, 12) + '...';
             }
@@ -737,16 +866,20 @@ class StageManagerExtension extends Extension {
 
             // Nombre de la aplicación si está disponible
             if (app) {
-                let appName = app.get_name();
-                if (appName && appName.length > 0) {
-                    if (appName.length > 12) {
-                        appName = appName.substring(0, 9) + '...';
+                try {
+                    let appName = app.get_name();
+                    if (appName && appName.length > 0) {
+                        if (appName.length > 12) {
+                            appName = appName.substring(0, 9) + '...';
+                        }
+                        let appLabel = new St.Label({
+                            text: appName,
+                            style_class: 'window-thumbnail-app-label'
+                        });
+                        thumbnailBox.add_child(appLabel);
                     }
-                    let appLabel = new St.Label({
-                        text: appName,
-                        style_class: 'window-thumbnail-app-label'
-                    });
-                    thumbnailBox.add_child(appLabel);
+                } catch (error) {
+                    console.warn('Stage Manager: Error obteniendo nombre de app:', error);
                 }
             }
 
@@ -756,7 +889,9 @@ class StageManagerExtension extends Extension {
             thumbnail.connect('clicked', () => {
                 this._safeCallback(() => {
                     try {
-                        window.activate(global.get_current_time());
+                        if (this._isWindowValid(window)) {
+                            window.activate(global.get_current_time());
+                        }
                     } catch (error) {
                         console.warn('Stage Manager: Error activando ventana:', error);
                     }
@@ -786,10 +921,15 @@ class StageManagerExtension extends Extension {
         try {
             global.get_window_actors().forEach(windowActor => {
                 try {
-                    windowActor.show();
-                    windowActor.opacity = 255;
-                    windowActor.scale_x = 1.0;
-                    windowActor.scale_y = 1.0;
+                    if (windowActor && !windowActor.is_destroyed()) {
+                        // Cancelar animaciones pendientes
+                        windowActor.remove_all_transitions();
+                        
+                        windowActor.show();
+                        windowActor.opacity = 255;
+                        windowActor.scale_x = 1.0;
+                        windowActor.scale_y = 1.0;
+                    }
                 } catch (error) {
                     console.warn('Stage Manager: Error restaurando ventana:', error);
                 }
