@@ -1,216 +1,399 @@
-/* stylesheet.css */
+/* stylesheet.css - Stage Manager estilo macOS */
 
 .stage-sidebar {
-    background-color: rgba(0, 0, 0, 0.8);
-    border-right: 1px solid rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(20, 20, 20, 0.97) 50%,
+    rgba(15, 15, 15, 0.98) 100%
+  );
+  backdrop-filter: blur(20px) saturate(1.8);
+  -webkit-backdrop-filter: blur(20px) saturate(1.8);
+  border-radius: 0 12px 12px 0;
+  margin-top: 30px;
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.289);
 }
+
+/* Pseudo-elemento para sombra derecha */
+.stage-sidebar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 24px;
+  height: 100%;
+  background: linear-gradient(to left, rgba(0, 0, 0, 0.3), transparent);
+  pointer-events: none;
+  z-index: 2; /* sobre el fondo pero bajo el contenido */
+}
+
 
 .stage-sidebar-box {
-    padding: 20px 10px;
-    spacing: 15px;
+    padding: 8px 6px;
+    spacing: 6px;
 }
 
-.stage-button {
-    background-color: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 8px;
-    padding: 12px 16px;
-    color: white;
-    font-size: 14px;
-    font-weight: 500;
-    transition-duration: 200ms;
-}
-
-.stage-button:hover {
-    background-color: rgba(255, 255, 255, 0.15);
-    border-color: rgba(255, 255, 255, 0.3);
-}
-
-.stage-button:active {
-    background-color: rgba(255, 255, 255, 0.2);
-}
-
+/* Botón nuevo stage - estilo macOS */
 .stage-button.new-stage {
-    background-color: rgba(52, 152, 219, 0.3);
-    border-color: rgba(52, 152, 219, 0.5);
-    margin-bottom: 10px;
+    background: linear-gradient(135deg, 
+        rgba(0, 122, 255, 0.8) 0%,
+        rgba(0, 100, 220, 0.9) 100%);
+    border-radius: 6px;
+    padding: 8px;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+    min-height: 32px;
+    min-width: 32px;
+    margin: 4px 8px 12px 8px;
+    box-shadow: 
+        0 2px 8px rgba(0, 122, 255, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    transition-duration: 150ms;
+    box-shadow: 0 0 3px rgba(18, 18, 18, 0.204);
 }
 
 .stage-button.new-stage:hover {
-    background-color: rgba(52, 152, 219, 0.4);
-    border-color: rgba(52, 152, 219, 0.6);
-}
-
-.stage-item {
-    background-color: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
-    padding: 0;
-    margin-bottom: 10px;
-    transition-duration: 200ms;
-    min-height: 80px;
-}
-
-.stage-item:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-    border-color: rgba(255, 255, 255, 0.2);
+    background: linear-gradient(135deg, 
+        rgba(0, 122, 255, 0.9) 0%,
+        rgba(0, 100, 220, 1.0) 100%);
+    box-shadow: 
+        0 4px 16px rgba(0, 122, 255, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.25);
     transform: scale(1.02);
 }
 
+.stage-button.new-stage:active {
+    transform: scale(0.98);
+    box-shadow: 
+        0 1px 4px rgba(0, 122, 255, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* Items de stage - imitando las miniaturas de macOS */
+.stage-item {
+    background: linear-gradient(145deg, 
+        rgba(255, 255, 255, 0.08) 0%,
+        rgba(255, 255, 255, 0.04) 50%,
+        rgba(0, 0, 0, 0.05) 100%);
+    transform: scale(1.02) translateZ(0);
+    box-shadow: 0 0 3px rgba(18, 18, 18, 0.204);
+
+}
+
+.stage-item:hover {
+    background: linear-gradient(145deg, 
+        rgba(255, 255, 255, 0.08) 0%,
+        rgba(255, 255, 255, 0.04) 50%,
+        rgba(0, 0, 0, 0.05) 100%);
+    border-color: rgba(255, 255, 255, 0.15);
+    transform: scale(1.02) translateZ(0);
+    box-shadow: 0 0 3px rgba(18, 18, 18, 0.444);
+    color: white;
+    transition: 500ms;
+}
+
+/* Stage activo - highlighting estilo macOS */
 .stage-item.active {
-    background-color: rgba(52, 152, 219, 0.2);
-    border-color: rgba(52, 152, 219, 0.4);
-    box-shadow: 0 0 20px rgba(52, 152, 219, 0.3);
+    background: linear-gradient(145deg, 
+        rgba(0, 122, 255, 0.15) 0%,
+        rgba(0, 100, 220, 0.2) 50%,
+        rgba(0, 80, 200, 0.25) 100%);
+    border: 2px solid rgba(0, 122, 255, 0.4);
+    box-shadow: 0 0 3px rgba(18, 18, 18, 0.46);
+    font-weight: bold;
+    transition: 500ms;
 }
 
 .stage-item.active:hover {
-    background-color: rgba(52, 152, 219, 0.25);
-    border-color: rgba(52, 152, 219, 0.5);
+    background: linear-gradient(145deg, 
+        rgba(0, 122, 255, 0.2) 0%,
+        rgba(0, 100, 220, 0.25) 50%,
+        rgba(0, 80, 200, 0.3) 100%);
+    color: white;
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.438);
+    transition: 500ms;
 }
 
 .stage-item-box {
-    padding: 12px;
-    spacing: 8px;
+    padding: 6px;
+    spacing: 4px;
 }
 
-.stage-label {
-    color: white;
-    font-size: 16px;
-    font-weight: 600;
-    text-align: center;
-}
-
+/* Contenedor de thumbnails */
 .stage-thumbnails {
-    spacing: 8px;
-    padding: 4px;
+    spacing: 3px;
+    padding: 2px;
 }
 
+/* Thumbnails de ventanas - estilo macOS con iconos pequeños */
 .window-thumbnail {
-    background-color: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 8px;
-    padding: 8px;
-    transition-duration: 150ms;
-    min-width: 60px;
-    min-height: 60px;
+    background: linear-gradient(135deg, 
+        rgba(255, 255, 255, 0.06) 0%,
+        rgba(255, 255, 255, 0.03) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    padding: 4px 6px;
+    margin: 1px;
+    transition: all 150ms cubic-bezier(0.4, 0.0, 0.2, 1.0);
+    min-width: 28px;
+    min-height: 28px;
+    box-shadow: 
+        0 1px 2px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .window-thumbnail:hover {
-    background-color: rgba(255, 255, 255, 0.2);
-    border-color: rgba(255, 255, 255, 0.3);
-    transform: scale(1.05);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    background: linear-gradient(135deg, 
+        rgba(255, 255, 255, 0.12) 0%,
+        rgba(255, 255, 255, 0.08) 100%);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: scale(1.08) translateZ(0);
+    box-shadow: 
+        0 3px 8px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .window-thumbnail:active {
-    transform: scale(0.95);
+    transform: scale(1.0);
+    transition-duration: 80ms;
 }
 
 .window-thumbnail-box {
-    spacing: 4px;
+    spacing: 2px;
     align-items: center;
+    justify-content: center;
 }
 
 .window-thumbnail-icon {
-    margin: 4px;
+    margin: 2px;
+    border-radius: 3px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
-.stage-empty-label {
-    color: rgba(255, 255, 255, 0.5);
-    font-size: 11px;
+/* Área de drop para stages vacíos */
+.stage-drop-area {
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 10px;
     font-style: italic;
     text-align: center;
-    padding: 8px;
+    padding: 12px 4px;
+    border: 1px dashed rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    margin: 2px;
+    min-height: 32px;
+    background: rgba(255, 255, 255, 0.01);
+    transition: all 200ms ease;
 }
 
-.window-thumbnail-label {
-    color: rgba(255, 255, 255, 0.9);
-    font-size: 12px;
-    max-width: 150px;
+.stage-drop-area:hover,
+.stage-drop-area.drag-over {
+    border-color: rgba(0, 122, 255, 0.4);
+    background: rgba(0, 122, 255, 0.05);
+    color: rgba(0, 122, 255, 0.8);
 }
 
-.stage-windows-list {
-    color: rgba(255, 255, 255, 0.8);
-    font-size: 11px;
-    padding: 4px;
-    max-width: 200px;
+/* Estados de drag and drop */
+.window-thumbnail.dragging {
+    opacity: 0.5;
+    transform: scale(0.9);
+    z-index: 1000;
 }
 
-/* Animaciones personalizadas */
+.stage-item.drop-target {
+    border-color: rgba(0, 122, 255, 0.6);
+    background: rgba(0, 122, 255, 0.08);
+    box-shadow: 
+        0 0 0 2px rgba(0, 122, 255, 0.3),
+        0 4px 16px rgba(0, 122, 255, 0.2);
+}
+
+/* Efectos de glassmorphism mejorados para macOS */
+.stage-sidebar {
+    background-attachment: fixed;
+}
+
+/* Animaciones suaves estilo macOS */
 @keyframes slideInFromLeft {
-    from {
-        transform: translateX(-100%);
+    0% {
+        transform: translateX(-100%) scale(0.95);
         opacity: 0;
     }
-    to {
-        transform: translateX(0);
+    100% {
+        transform: translateX(0) scale(1);
         opacity: 1;
     }
 }
 
 @keyframes fadeInScale {
-    from {
+    0% {
         transform: scale(0.8);
         opacity: 0;
     }
-    to {
+    50% {
+        transform: scale(1.02);
+        opacity: 0.8;
+    }
+    100% {
         transform: scale(1);
         opacity: 1;
     }
 }
 
+@keyframes pulseGlow {
+    0%, 100% {
+        box-shadow: 
+            0 0 0 2px rgba(0, 122, 255, 0.2),
+            0 4px 16px rgba(0, 122, 255, 0.3);
+    }
+    50% {
+        box-shadow: 
+            0 0 0 3px rgba(0, 122, 255, 0.3),
+            0 6px 20px rgba(0, 122, 255, 0.4);
+    }
+}
+
 .stage-item {
-    animation: fadeInScale 0.3s ease-out;
+    animation: fadeInScale 0.3s cubic-bezier(0.2, 0.0, 0.2, 1.0);
 }
 
 .stage-sidebar {
-    animation: slideInFromLeft 0.4s ease-out;
+    animation: slideInFromLeft 0.4s cubic-bezier(0.2, 0.0, 0.2, 1.0);
 }
 
-/* Responsive design para diferentes tamaños de pantalla */
+.stage-item.active {
+    animation: pulseGlow 2s ease-in-out infinite;
+}
+
+/* Responsive design mejorado */
 @media (max-width: 1366px) {
+    .stage-sidebar {
+        width: 220px;
+    }
+    
+    .window-thumbnail {
+        min-width: 24px;
+        min-height: 24px;
+        padding: 3px 4px;
+    }
+    
+    .window-thumbnail-icon {
+        margin: 1px;
+    }
+}
+
+@media (max-width: 1024px) {
     .stage-sidebar {
         width: 200px;
     }
     
-    .window-thumbnail-label {
-        max-width: 120px;
-        font-size: 11px;
+    .stage-item {
+        min-height: 48px;
+        margin: 1px 6px;
+    }
+    
+    .window-thumbnail {
+        min-width: 20px;
+        min-height: 20px;
+        padding: 2px 3px;
     }
 }
 
-/* Efectos de glassmorphism mejorados */
-.stage-sidebar {
-    background: linear-gradient(135deg, 
-        rgba(0, 0, 0, 0.7) 0%, 
-        rgba(20, 20, 20, 0.8) 50%, 
-        rgba(0, 0, 0, 0.9) 100%);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+/* Scrollbar personalizado estilo macOS */
+.stage-sidebar StScrollBar {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 6px;
+    width: 8px;
 }
 
-.stage-item.active {
-    background: linear-gradient(135deg, 
-        rgba(52, 152, 219, 0.2) 0%, 
-        rgba(41, 128, 185, 0.3) 100%);
-    box-shadow: 
-        0 4px 16px rgba(52, 152, 219, 0.3),
-        inset 0 1px 0 rgba(255, 255, 255, 0.1);
-}
-
-/* Scrollbar personalizado para la sidebar */
 .stage-sidebar StScrollBar StButton#hhandle,
 .stage-sidebar StScrollBar StButton#vhandle {
-    background-color: rgba(255, 255, 255, 0.2);
+    background: linear-gradient(135deg,
+        rgba(255, 255, 255, 0.15) 0%,
+        rgba(255, 255, 255, 0.25) 100%);
     border-radius: 4px;
     margin: 2px;
+    border: none;
+    box-shadow: 
+        0 1px 2px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .stage-sidebar StScrollBar StButton#hhandle:hover,
 .stage-sidebar StScrollBar StButton#vhandle:hover {
-    background-color: rgba(255, 255, 255, 0.3);
+    background: linear-gradient(135deg,
+        rgba(255, 255, 255, 0.25) 0%,
+        rgba(255, 255, 255, 0.35) 100%);
+    box-shadow: 
+        0 2px 4px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 
-.stage-sidebar StScrollBar {
-    background-color: rgba(0, 0, 0, 0.1);
+/* Efectos de focus y accesibilidad */
+.stage-item:focus,
+.window-thumbnail:focus,
+.stage-button:focus {
+    outline: 2px solid rgba(0, 122, 255, 0.8);
+    outline-offset: 2px;
+}
+
+/* Transiciones mejoradas para interacciones */
+* {
+    transition-timing-function: cubic-bezier(0.2, 0.0, 0.2, 1.0);
+}
+
+/* Estados de carga y error */
+.stage-item.loading {
+    opacity: 0.6;
+    animation: none;
+}
+
+.stage-item.error {
+    border-color: rgba(255, 59, 48, 0.4);
+    background: rgba(255, 59, 48, 0.05);
+}
+
+/* Mejoras de contraste para accesibilidad */
+@media (prefers-contrast: high) {
+    .stage-sidebar {
+        background: rgba(0, 0, 0, 0.95);
+        border-right: 2px solid rgba(255, 255, 255, 0.3);
+    }
+    
+    .stage-item {
+        border: 2px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .stage-item.active {
+        border: 2px solid rgba(0, 122, 255, 0.8);
+    }
+}
+
+/* Soporte para tema oscuro/claro del sistema */
+@media (prefers-color-scheme: light) {
+    .stage-sidebar {
+        background: linear-gradient(180deg, 
+            rgba(250, 250, 250, 0.95) 0%,
+            rgba(240, 240, 240, 0.97) 50%,
+            rgba(235, 235, 235, 0.98) 100%);
+        border-right: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    
+    .stage-item {
+        background: linear-gradient(145deg, 
+            rgba(0, 0, 0, 0.04) 0%,
+            rgba(0, 0, 0, 0.02) 50%,
+            rgba(255, 255, 255, 0.1) 100%);
+        border: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    
+    .window-thumbnail {
+        background: linear-gradient(135deg, 
+            rgba(0, 0, 0, 0.06) 0%,
+            rgba(0, 0, 0, 0.03) 100%);
+        border: 1px solid rgba(0, 0, 0, 0.15);
+    }
 }
