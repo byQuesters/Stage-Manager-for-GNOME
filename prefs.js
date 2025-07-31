@@ -55,7 +55,7 @@ export default class StageManagerPreferences extends ExtensionPreferences {
             title: 'Transparencia de la barra lateral',
             subtitle: '0.3 = muy transparente, 1.0 = opaco',
             adjustment: new Gtk.Adjustment({
-                lower: 0.3,
+                lower: 0.0,
                 upper: 1.0,
                 step_increment: 0.1,
             }),
