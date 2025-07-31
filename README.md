@@ -34,5 +34,6 @@ Puedes ayudar de las siguientes maneras:
 ****
 
 📜 **Licencia**
+
 Este proyecto está licenciado bajo la **MIT License**.
 
