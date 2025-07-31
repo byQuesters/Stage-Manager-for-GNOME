@@ -1,39 +1,38 @@
 🌀 **Stage Manager for GNOME**
 
-Una extensión para GNOME inspirada en Stage Manager de macOS, diseñada para transformar tu flujo de trabajo con ventanas de forma ordenada, elegante y eficiente.
+A GNOME extension inspired by macOS's Stage Manager, designed to transform your windowed workflow in a tidy, elegant, and efficient way.
 
 <img width="1536" height="1024" alt="Stage Manager byQuesters V1" src="https://github.com/user-attachments/assets/9e45b350-2648-4fb4-9a1a-c68fa45a5c22" />
 
 ****
-✨ **Características principales**
+✨ **Key Features**
 
-- 🔲 Agrupación automática de ventanas por aplicación.
-- 🪟 Visualización lateral de ventanas inactivas con animaciones suaves.
-- ⚡ Cambios de enfoque rápidos, sin distracciones ni interrupciones.
-- 🍎 Interfaz visual inspirada en macOS, adaptada al ecosistema GNOME.
+- 🔲 Automatic window grouping by application.
+- 🪟 Side-by-side display of inactive windows with smooth animations.
+- ⚡ Fast focus changes, without distractions or interruptions.
+- 🍎 macOS-inspired visual interface, tailored to the GNOME ecosystem.
 
-⚙️ **Requisitos**
+⚙️ **Requirements**
 
-- GNOME 42 o superior.
-- Tener habilitado el uso de extensiones.
-- Gestor de ventanas compatible con Mutter.
+- GNOME 42 or higher.
+- Extensions enabled.
+- Mutter-compatible window manager.
 
-📦 **Instalación**
+📦 **Installation**
 
-- Próximamente se incluirán instrucciones detalladas para instalación manual y desde GNOME Extensions (cuando esté disponible).
+- Detailed instructions for manual installation and installation via GNOME Extensions (when available) will be included soon.
 
-🤝 **Contribuye**
+🤝 **Contribute**
 
-¡Tu apoyo es esencial para que este proyecto crezca!  
-Puedes ayudar de las siguientes maneras:
+Your support is essential for this project to grow!
+You can help in the following ways:
 
-- ⭐ Dale una estrella al repositorio para apoyar el desarrollo.
-- 🛠️ Envía un Pull Request si encuentras errores o tienes ideas para mejorar.
-- 📥 Reporta problemas o sugiere funciones desde la pestaña Issues.
+- ⭐ Give the repository a star to support development.
+- 🛠️ Submit a Pull Request if you find bugs or have ideas for improvements.
+- 📥 Report issues or suggest features from the Issues tab.
 
 ****
 
-📜 **Licencia**
+📜 **License**
 
-Este proyecto está licenciado bajo la **MIT License**.
-
+This project is licensed under the **MIT License**.
