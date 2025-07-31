@@ -244,7 +244,7 @@ class StageManagerExtension extends Extension {
     _createStageManager() {
         try {
             let monitor = Main.layoutManager.primaryMonitor;
-            let topMargin = Math.floor(monitor.height * 0.1);
+            let topMargin = Math.floor(monitor.height * 0.02);
             
             // Obtener posición desde settings
             let sidebarPosition = this._settings.get_string('sidebar-position');
@@ -645,7 +645,7 @@ class StageManagerExtension extends Extension {
     _arrangeStageWindows(windows) {
         try {
             let monitor = Main.layoutManager.primaryMonitor;
-            let topMargin = Math.floor(monitor.height * 0.1);
+            let topMargin = Math.floor(monitor.height * 0.02);
             let sidebarPosition = this._settings.get_string('sidebar-position');
             
             let workArea = {
